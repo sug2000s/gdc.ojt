@@ -1,8 +1,9 @@
 # OS
 .DS_Store
 
-# Answer keys (instructor only, do not commit)
+# Answer keys & evaluation reports (instructor only, do not commit)
 *-with-answers*
+report-*.md
 
 # Generated docs
 *.docx
