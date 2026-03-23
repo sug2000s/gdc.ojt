@@ -1,0 +1,40 @@
+1: B) <class 'str'>
+2: C) 2nd_value
+3: B) <class 'float'>
+4: B) 1
+5: C) None은 값이 없음을 나타내는 고유한 타입이다 / None is a unique type meaning "no value" / None là kiểu riêng biệt nghĩa là "không có giá trị"
+6: A) Pn
+7: B) s.upper()
+8: B) Hello, Alice!
+9: B) ["apple", "banana", "cherry"]
+10: C) A, B 모두 / Both A and B / Cả A  B
+11: B) 4
+12: B) [2, 3, 4]
+13: A) 튜플은 수정 불가 / Tuple is immutable / Tuple không thể thay đổi
+14: A) Alice
+15: B) d.get("b")`
+16: B) medium
+17: B) 0, 1, 2
+18: B) 0 1 2
+19: B) 현재 반복을 건너뛰고 다음으로 / Skips current iteration, goes to next / Bỏ qua vòng lặp hiện tại, chuyển sang tiếp theo
+20: B) [6, 8, 10]
+21: C) 15
+22: A) 키워드 인자를 딕셔너리로 받음 / Receives keyword args as dict / Nhận đối số keyword dạng dict
+23: A) 위치 인자를 튜플로 받음 / Receives positional args as tuple / Nhận đối số vị trí dạng tuple
+24: B) Hi, Bob
+25: A) lambda x: x * 2
+26: C) error 그리고 / and / và done
+27: B) with open("file.txt") as f:
+28: B) [1, 1, 3, 4, 5]
+29: C) A, B 모두 맞음 / Both A and B are correct / Cả A và B đều đúng
+30: B) Rex says Woof!
+31: B) 코루틴 / Coroutine / Coroutine
+32: B) 기다리되, 다른 작업이 실행될 수 있게 함 / Waits, but allows other tasks to run / Chờ, nhưng cho phép các tác vụ khác chạy
+33: C) await
+34: B) DB 조회, API 호출 등 기다리는 시간이 많은 작업 / DB queries, API calls with lots of waiting time / Truy vấn DB, gọi API có nhiều thời gian chờ
+35: B) 값을 하나씩 돌려주고, 다음 호출 때 이어서 실행 / Returns values one by one, resumes on next call / Trả về từng giá trị, tiếp tục khi được gọi lại
+36: B) 제너레이터 / Generator / Generator
+37: B) 데이터를 한번에 메모리에 올리지 않아 메모리 절약 / Saves memory by not loading all data at once / Tiết kiệm bộ nhớ vì không tải toàn bộ dữ liệu cùng lúc
+38: A) /hello 경로의 GET 요청을 처리 / Handles GET requests to /hello / Xử lý yêu cầu GET đến /hello
+39: B) 42 (정수 / integer / số nguyên)
+40: C) JSON
