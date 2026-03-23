@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+
+# Answer keys (instructor only, do not commit)
+*-with-answers*
+*-explained*
+
+# Generated docs
+*.docx
+*.pdf
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OMC
+.omc/
