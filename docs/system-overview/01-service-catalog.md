@@ -30,39 +30,7 @@
 
 ---
 
-## 2. assetization_authsso (PC 웹 프론트엔드 - Legacy)
-
-**경로**: `/Users/ryu/assetization_authsso`
-**스택**: Java 11 + Spring Boot 2.6.6 + JSP + jQuery
-
-### 핵심 파일
-
-| 파일 | 줄수 | 역할 |
-|------|------|------|
-| `src/main/java/.../SearchController.java` | 276 | 검색 API 컨트롤러 |
-| `src/main/java/.../MobileSearchController.java` | 155 | 모바일 검색 |
-| `src/main/java/.../SearchService.java` | 117 | 검색 비즈니스 로직 |
-| `src/main/java/.../SSOFilter.java` | 231 | SSO 인증 필터 |
-| `src/main/java/.../LoginController.java` | 277 | 로그인 처리 |
-| `src/main/java/.../SecurityConfig.java` | 167 | Spring Security 설정 |
-| `src/main/java/.../SessionCreateInterceptor.java` | 223 | 세션 생성 인터셉터 |
-| `src/main/java/.../UserMapper.xml` | 142 | MyBatis 사용자 쿼리 |
-| `src/main/resources/application.yml` | 406 | 멀티 프로파일 설정 |
-| `pom.xml` | 265 | Maven 의존성 |
-
-### 프론트엔드 JavaScript (8852줄)
-- `assetization_ai_search_summerize_new.js` (2184줄) - SSE 스트리밍 검색
-- `assetization_ai_lnb.js` (885줄) - 사이드바 UI
-- `assetization_ai_collection.js` (854줄) - 컬렉션 관리
-- `assetization_ai_search_external.js` (753줄) - 외부(GPT) 검색
-- `assetization_search_cache.js` (545줄) - LocalStorage 캐시
-
-### 내장 Python 게이트웨이
-- `assetization_auth_gateway/` - FastAPI 기반 인증 게이트웨이 (assetization_auth의 원형)
-
----
-
-## 3. assetization_auth (인증 게이트웨이)
+## 2. assetization_auth (인증 게이트웨이)
 
 **경로**: `/Users/ryu/assetization_auth`
 **스택**: Python 3.13 + FastAPI + Redis + MSSQL
@@ -271,12 +239,11 @@ INTENT_ANALYSIS → EMBEDDING → VECTOR_SEARCH → DIRECT_QUERY
 | 서비스 | 언어 | 코드 줄수 (약) |
 |--------|------|---------------|
 | assetization_mobile | TypeScript/TSX | 164파일, ~10,000줄 |
-| assetization_authsso | Java + JS | ~12,000줄 |
 | assetization_auth | Python | ~2,000줄 |
 | assetization_orchestrator | Python | ~5,500줄 |
 | assetization_mcp | Python | ~8,700줄 |
 | assetization_datacenter | Python | ~8,400줄 |
 | assetization_api | Python | ~2,100줄 |
 | keylook-officeplus | Python | ~7,300줄 |
-| **합계** | | **~56,000줄** |
+| **합계** | | **~44,000줄** |
 ㅇ

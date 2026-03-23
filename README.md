@@ -7,19 +7,18 @@
 - 기간: 2주 (Week 1 ~ Week 2)
 - 대상: 베트남 GDC 팀
 
-## 시스템 구성 (9개 레포지토리, ~56,000줄)
+## 시스템 구성 (8개 레포지토리, ~44,000줄)
 
 | # | 서비스 | 스택 | 역할 |
 |---|--------|------|------|
 | 1 | assetization_mobile | React 19 + TS + Vite | 모바일 프론트엔드 |
-| 2 | assetization_authsso | Java + Spring Boot + JSP | PC 웹 프론트엔드 |
-| 3 | assetization_auth | Python + FastAPI | 인증 게이트웨이 |
-| 4 | assetization_orchestrator | Python + FastAPI + LangGraph | AI 채팅/검색 엔진 |
-| 5 | assetization_mcp | Python + FastAPI + MCP | 리스크 분석 |
-| 6 | assetization_datacenter | Python + FastAPI | 히스토리/태그/컬렉션 |
-| 7 | assetization_api | Python + FastAPI + LangChain | 레거시 API |
-| 8 | keylook-officeplus | Python + FastAPI + FlagEmbedding | 하이브리드 검색 엔진 |
-| 9 | keylook_script | Shell | Docker 래퍼 |
+| 2 | assetization_auth | Python + FastAPI | 인증 게이트웨이 |
+| 3 | assetization_orchestrator | Python + FastAPI + LangGraph | AI 채팅/검색 엔진 |
+| 4 | assetization_mcp | Python + FastAPI + MCP | 리스크 분석 |
+| 5 | assetization_datacenter | Python + FastAPI | 히스토리/태그/컬렉션 |
+| 6 | assetization_api | Python + FastAPI + LangChain | 레거시 API |
+| 7 | keylook-officeplus | Python + FastAPI + FlagEmbedding | 하이브리드 검색 엔진 |
+| 8 | keylook_script | Shell | Docker 래퍼 |
 
 ## 폴더 구조
 

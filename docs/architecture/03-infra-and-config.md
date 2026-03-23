@@ -21,7 +21,6 @@
 | assetization_datacenter | 80 | 80 | 80 |
 | assetization_api | 8000 | 8000 | 8000 |
 | keylook-officeplus | 9090 | 8001-8006 | 8001-8006 |
-| assetization_authsso | 9090 | 9091 | 8080 |
 
 ## Docker 구성
 

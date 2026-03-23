@@ -17,12 +17,11 @@ This is a **documentation-only repository** for handover of the Assetization sys
 
 ## What This Documents
 
-9 microservices comprising the Assetization system (~56,000 lines):
+8 microservices comprising the Assetization system (~44,000 lines):
 
 | Service | Stack | Location |
 |---------|-------|----------|
 | assetization_mobile | React 19 + TS + Vite | `/Users/ryu/assetization_mobile` |
-| assetization_authsso | Java + Spring Boot | `/Users/ryu/assetization_authsso` |
 | assetization_auth | Python + FastAPI | `/Users/ryu/assetization_auth` |
 | assetization_orchestrator | Python + FastAPI + LangGraph | `/Users/ryu/assetization_orchestrator` |
 | assetization_mcp | Python + FastAPI + MCP | `/Users/ryu/assetization_mcp` |

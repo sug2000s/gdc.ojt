@@ -7,18 +7,14 @@
                           │
                     ┌─────┴─────┐
                     │           │
-              [PC 브라우저]  [모바일 앱]
-                    │           │
-            ┌───────┴───────────┴───────┐
-            │                           │
-    ┌───────┴────────┐         ┌────────┴────────┐
-    │ assetization_  │         │ assetization_   │
-    │ authsso        │         │ mobile          │
-    │ (Java/Spring)  │         │ (React/Vite)    │
-    │ PC 웹 프론트   │         │ 모바일 프론트   │
-    └───────┬────────┘         └────────┬────────┘
-            │                           │
-            └───────────┬───────────────┘
+              [PC/모바일 브라우저]
+                        │
+               ┌────────┴────────┐
+               │ assetization_   │
+               │ mobile          │
+               │ (React/Vite)    │
+               │ 프론트엔드      │
+               └────────┬────────┘
                         │
               ┌─────────┴─────────┐
               │ assetization_auth │
@@ -58,15 +54,14 @@
 
 | # | 레포지토리 | 언어/프레임워크 | 역할 | 포트 |
 |---|-----------|---------------|------|------|
-| 1 | `assetization_mobile` | React 19 + Vite + TS | 모바일/태블릿 프론트엔드 | 5173 |
-| 2 | `assetization_authsso` | Java 11 + Spring Boot 2.6 | PC 웹 프론트엔드 (JSP) | 9090/9091/8080 |
-| 3 | `assetization_auth` | Python 3.13 + FastAPI | 인증 게이트웨이 (SSO/EMS) | 9090/8080 |
-| 4 | `assetization_orchestrator` | Python 3.13 + FastAPI + LangGraph | AI 채팅/검색 오케스트레이션 | 80 |
-| 5 | `assetization_mcp` | Python 3.13 + FastAPI + MCP | 리스크 분석 (MCP 서버) | 8080/9090 |
-| 6 | `assetization_datacenter` | Python 3.9 + FastAPI | 히스토리/태그/컬렉션/배치 | 80 |
-| 7 | `assetization_api` | Python 3.13 + FastAPI | 레거시 API (주간보고 등) | 8000 |
-| 8 | `keylook-officeplus` | Python 3.9+ + FastAPI | 하이브리드 검색 엔진 | 8001-8006 |
-| 9 | `keylook_script` | Shell | KeyLook Docker 래퍼 | - |
+| 1 | `assetization_mobile` | React 19 + Vite + TS | 프론트엔드 | 5173 |
+| 2 | `assetization_auth` | Python 3.13 + FastAPI | 인증 게이트웨이 (SSO/EMS) | 9090/8080 |
+| 3 | `assetization_orchestrator` | Python 3.13 + FastAPI + LangGraph | AI 채팅/검색 오케스트레이션 | 80 |
+| 4 | `assetization_mcp` | Python 3.13 + FastAPI + MCP | 리스크 분석 (MCP 서버) | 8080/9090 |
+| 5 | `assetization_datacenter` | Python 3.9 + FastAPI | 히스토리/태그/컬렉션/배치 | 80 |
+| 6 | `assetization_api` | Python 3.13 + FastAPI | 레거시 API (주간보고 등) | 8000 |
+| 7 | `keylook-officeplus` | Python 3.9+ + FastAPI | 하이브리드 검색 엔진 | 8001-8006 |
+| 8 | `keylook_script` | Shell | KeyLook Docker 래퍼 | - |
 
 ## 인프라 구성
 
