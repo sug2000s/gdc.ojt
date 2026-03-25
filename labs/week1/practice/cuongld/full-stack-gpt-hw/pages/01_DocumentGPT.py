@@ -141,6 +141,8 @@ with st.sidebar:
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
     )
+    if st.button("Clear Chat History"):
+        st.session_state["messages"] = []
 
 message = st.chat_input(
     "Ask anything about your file...",
