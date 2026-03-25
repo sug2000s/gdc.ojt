@@ -1,0 +1,12 @@
+﻿TITLE: Stars and Stellar Life Cycle
+TOPIC: stars
+LANG: en
+---
+Stars form from gas and dust clouds in nebulae.
+Gravity causes collapse, temperature rises, and nuclear fusion begins.
+A star's life cycle depends on its mass:
+- Low-mass stars become white dwarfs.
+- High-mass stars may explode as supernovae and leave neutron stars or black holes.
+The Sun is a G-type star, about 4.6 billion years old.
+RAG note:
+- Keywords: fusion, supernova, neutron star, white dwarf.

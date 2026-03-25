@@ -1,0 +1,13 @@
+﻿TITLE: Galaxies and Large-Scale Structure
+TOPIC: galaxies
+LANG: en
+---
+A galaxy is a system of stars, gas, dust, and dark matter bound by gravity.
+The Milky Way is the galaxy that contains our Solar System.
+Three common galaxy types are:
+- Spiral
+- Elliptical
+- Irregular
+Galaxies form clusters and superclusters.
+RAG note:
+- Keywords: Milky Way, spiral galaxy, galaxy cluster.

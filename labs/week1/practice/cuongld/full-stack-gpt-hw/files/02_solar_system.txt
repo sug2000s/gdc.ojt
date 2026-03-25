@@ -1,0 +1,11 @@
+﻿TITLE: Solar System
+TOPIC: solar system
+LANG: en
+---
+The Solar System consists of the Sun and objects orbiting it.
+The 8 planets in order from the Sun are:
+Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.
+The asteroid belt lies between Mars and Jupiter.
+The Kuiper Belt and Oort Cloud contain many icy bodies.
+RAG note:
+- Keywords: planets, asteroid belt, Kuiper Belt, Oort Cloud.

@@ -1,0 +1,15 @@
+﻿TITLE: RAG QA Seed
+TOPIC: qa seed
+LANG: en
+---
+Q: How old is the universe?
+A: About 13.8 billion years.
+
+Q: How many planets are in the Solar System?
+A: Eight planets.
+
+Q: What is an event horizon?
+A: It is the boundary around a black hole beyond which light cannot escape.
+
+Q: What evidence supports black holes?
+A: Star motions, X-ray emissions from accretion disks, and gravitational waves.

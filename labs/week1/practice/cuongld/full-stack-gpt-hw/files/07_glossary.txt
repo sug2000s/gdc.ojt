@@ -1,0 +1,10 @@
+﻿TITLE: Basic Glossary
+TOPIC: glossary
+LANG: en
+---
+Big Bang: a model describing the hot, dense early universe.
+Dark matter: matter that does not emit light but has gravitational effects.
+Dark energy: a component driving accelerated cosmic expansion.
+Light-year: the distance light travels in one year.
+Astronomical Unit (AU): average Earth-Sun distance.
+Redshift: a shift to longer wavelengths as objects move away.

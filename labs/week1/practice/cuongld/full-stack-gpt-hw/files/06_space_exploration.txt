@@ -1,0 +1,12 @@
+﻿TITLE: Space Exploration
+TOPIC: space exploration
+LANG: en
+---
+Major milestones:
+- 1957: Sputnik 1, first artificial satellite.
+- 1969: Apollo 11, first human Moon landing.
+- 1998: International Space Station assembly began.
+- 2021+: James Webb Space Telescope operations.
+Current goals include returning humans to the Moon and missions toward Mars.
+RAG note:
+- Keywords: Apollo 11, ISS, James Webb, Mars.

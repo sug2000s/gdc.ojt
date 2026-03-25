@@ -1,0 +1,13 @@
+﻿TITLE: Black Holes
+TOPIC: black holes
+LANG: en
+---
+A black hole is a region of spacetime with gravity so strong that not even light can escape.
+Its boundary is called the event horizon.
+Supermassive black holes are often found at the centers of galaxies.
+Indirect evidence includes:
+- Motions of nearby stars
+- X-rays from accretion disks
+- Gravitational waves from black hole mergers
+RAG note:
+- Keywords: event horizon, accretion disk, gravitational waves.

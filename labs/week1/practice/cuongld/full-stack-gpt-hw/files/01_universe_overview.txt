@@ -1,0 +1,32 @@
+﻿TITLE: Universe Overview
+TOPIC: cosmos overview
+LANG: en
+The universe is the totality of space, time, matter, and energy. It contains everything that physically exists, from tiny subatomic particles to enormous galaxy superclusters. Modern cosmology describes the universe as dynamic rather than static: it changes over time, expands, and evolves in structure. The best-supported model for its origin and evolution is the Big Bang model.
+The Big Bang does not describe an explosion into empty space. Instead, it describes the rapid expansion of space itself from an extremely hot, dense early state about 13.8 billion years ago. In the first fractions of a second, fundamental particles formed. Within minutes, the first light elements such as hydrogen and helium nuclei were produced in a process called Big Bang nucleosynthesis.
+About 380,000 years after the Big Bang, the universe cooled enough for electrons and nuclei to combine into neutral atoms. At that moment, photons began traveling freely through space. We observe this ancient light today as the cosmic microwave background (CMB), one of the strongest pieces of evidence for the Big Bang model.
+Over millions and billions of years, gravity amplified tiny density fluctuations, pulling matter together. This led to the formation of the first stars, galaxies, galaxy clusters, and large-scale cosmic filaments. The large-scale structure of the universe today resembles a cosmic web, where galaxies are concentrated along filaments and sheets, separated by vast voids.
+Matter in the universe appears in two broad categories:
+Ordinary matter (also called baryonic matter), which includes atoms, stars, planets, gas, and dust.
+Non-luminous components inferred from observation, including dark matter and dark energy.
+Dark matter does not emit, absorb, or reflect light in any known direct way, but its gravitational effects are visible in galaxy rotation curves, gravitational lensing, and structure formation. Dark energy is a term used for the unknown cause of the accelerated expansion of the universe, discovered through observations of distant Type Ia supernovae.
+A common approximate composition model is:
+About 5 percent ordinary matter
+About 27 percent dark matter
+About 68 percent dark energy
+These values can vary slightly depending on the observational dataset and cosmological model assumptions.
+Distance and time scales in cosmology are enormous. A light-year is the distance light travels in one year. Astronomers also use parsecs, megaparsecs, and redshift values to describe cosmic distances and expansion history. Redshift measures how much light from distant galaxies is stretched to longer wavelengths as space expands.
+The observable universe is the region from which light has had time to reach us since the beginning of cosmic expansion. Its diameter is much larger than 13.8 billion light-years because space has expanded while light traveled. Beyond the observable horizon, the full universe may continue, but it is currently inaccessible to direct observation.
+Important milestones in cosmic history include:
+Big Bang: around 13.8 billion years ago
+Recombination and CMB release: around 380,000 years after Big Bang
+First stars and galaxies: a few hundred million years after Big Bang
+Formation of the Solar System: around 4.6 billion years ago
+Present epoch: accelerated cosmic expansion continues
+Open questions in cosmology include:
+What is the true nature of dark matter?
+What is dark energy and why does expansion accelerate?
+What happened at the earliest moments before known physics can be applied?
+Is inflation correct, and what caused it?
+What is the global shape and ultimate fate of the universe?
+Current and future observatories help address these questions, including cosmic microwave background missions, large sky surveys, gravitational wave detectors, and space telescopes such as the James Webb Space Telescope. Together, they improve measurements of cosmic parameters and test competing cosmological theories.
+In summary, the universe is not only vast in size but also rich in physical processes across time. Cosmology connects particle physics, gravity, astronomy, and data science to explain how the cosmos began, how it evolved, and what may happen in the far future.
