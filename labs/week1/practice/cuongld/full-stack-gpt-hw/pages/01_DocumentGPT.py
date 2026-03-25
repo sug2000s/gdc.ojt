@@ -36,6 +36,7 @@ class ChatCallbackHandler(BaseCallbackHandler):
 
 
 MODEL_DEPLOYMENT_ENV = {
+    "gpt-5.1": "OPENAI_DEPLOYMENT_GPT_5_1",
     "gpt-4o-mini": "OPENAI_DEPLOYMENT_GPT_4O_MINI",
     "gpt-4o": "OPENAI_DEPLOYMENT_GPT_4O",
     "gpt-4-turbo": "OPENAI_DEPLOYMENT_GPT_4_TURBO",
@@ -151,8 +152,8 @@ Upload your files on the sidebar.
 )
 
 with st.sidebar:
-    model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
-    default_model = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini")
+    model_options = ["gpt-5.1", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
+    default_model = os.getenv("OPENAI_MODEL_NAME", "gpt-5.1")
     default_model_index = (
         model_options.index(default_model) if default_model in model_options else 0
     )
