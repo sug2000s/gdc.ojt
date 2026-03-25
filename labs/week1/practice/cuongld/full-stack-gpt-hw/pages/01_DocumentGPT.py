@@ -34,16 +34,17 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message_box.markdown(self.message)
 
 
-llm = ChatOpenAI(
-    base_url=os.getenv("OPENAI_BASE_URL"),
-    api_key=os.getenv("OPENAI_API_KEY"),
-    model=os.getenv("OPENAI_MODEL_NAME", "gpt-5.1"),
-    temperature=0.1,
-    streaming=True,
-    callbacks=[
-        ChatCallbackHandler(),
-    ],
-)
+def get_llm(model_name):
+    return ChatOpenAI(
+        base_url=os.getenv("OPENAI_BASE_URL"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model=model_name,
+        temperature=0.1,
+        streaming=True,
+        callbacks=[
+            ChatCallbackHandler(),
+        ],
+    )
 
 
 @st.cache_resource(show_spinner="Embedding file...")
@@ -137,6 +138,17 @@ Upload your files on the sidebar.
 )
 
 with st.sidebar:
+    model_options = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo"]
+    default_model = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini")
+    default_model_index = (
+        model_options.index(default_model) if default_model in model_options else 0
+    )
+    selected_model = st.selectbox(
+        "Choose model",
+        options=model_options,
+        index=default_model_index,
+    )
+
     file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
@@ -155,6 +167,7 @@ if file:
     paint_history()
     if message:
         send_message(message, "human")
+        llm = get_llm(selected_model)
         chain = (
             {
                 "context": retriever | RunnableLambda(format_docs),
