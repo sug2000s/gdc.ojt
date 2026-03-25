@@ -46,23 +46,22 @@ llm = ChatOpenAI(
 )
 
 
-@st.cache_data(show_spinner="Embedding file...")
-def embed_file(file):
-    file_content = file.read()
+@st.cache_resource(show_spinner="Embedding file...")
+def embed_file(file_name, file_content):
     files_cache_dir = "./.cache/files"
     embeddings_cache_root = "./.cache/embeddings"
     os.makedirs(files_cache_dir, exist_ok=True)
     os.makedirs(embeddings_cache_root, exist_ok=True)
-    file_path = os.path.join(files_cache_dir, file.name)
+    file_path = os.path.join(files_cache_dir, file_name)
     with open(file_path, "wb") as f:
         f.write(file_content)
-    cache_dir = LocalFileStore(os.path.join(embeddings_cache_root, file.name))
+    cache_dir = LocalFileStore(os.path.join(embeddings_cache_root, file_name))
     splitter = CharacterTextSplitter.from_tiktoken_encoder(
         separator="\n",
         chunk_size=600,
         chunk_overlap=100,
     )
-    file_ext = os.path.splitext(file.name)[1].lower()
+    file_ext = os.path.splitext(file_name)[1].lower()
     if file_ext == ".txt":
         loader = TextLoader(file_path, encoding="utf-8")
     elif file_ext == ".pdf":
@@ -149,7 +148,7 @@ message = st.chat_input(
 )
 
 if file:
-    retriever = embed_file(file)
+    retriever = embed_file(file.name, file.getvalue())
     send_message("I'm ready! Ask away!", "ai", save=False)
     paint_history()
     if message:
