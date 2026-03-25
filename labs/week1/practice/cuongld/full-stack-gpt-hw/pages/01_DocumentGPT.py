@@ -12,6 +12,7 @@ from langchain_classic.storage import LocalFileStore
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_core.callbacks import BaseCallbackHandler
+from openai import NotFoundError
 import streamlit as st
 
 st.set_page_config(
@@ -32,6 +33,18 @@ class ChatCallbackHandler(BaseCallbackHandler):
     def on_llm_new_token(self, token, *args, **kwargs):
         self.message += token
         self.message_box.markdown(self.message)
+
+
+MODEL_DEPLOYMENT_ENV = {
+    "gpt-4o-mini": "OPENAI_DEPLOYMENT_GPT_4O_MINI",
+    "gpt-4o": "OPENAI_DEPLOYMENT_GPT_4O",
+    "gpt-4-turbo": "OPENAI_DEPLOYMENT_GPT_4_TURBO",
+}
+
+
+def resolve_model_name(selected_model):
+    deployment_env = MODEL_DEPLOYMENT_ENV[selected_model]
+    return os.getenv(deployment_env, selected_model)
 
 
 def get_llm(model_name):
@@ -148,6 +161,8 @@ with st.sidebar:
         options=model_options,
         index=default_model_index,
     )
+    selected_model_name = resolve_model_name(selected_model)
+    st.caption(f"Model/Deployment: {selected_model_name}")
 
     file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
@@ -167,7 +182,7 @@ if file:
     paint_history()
     if message:
         send_message(message, "human")
-        llm = get_llm(selected_model)
+        llm = get_llm(selected_model_name)
         chain = (
             {
                 "context": retriever | RunnableLambda(format_docs),
@@ -177,7 +192,14 @@ if file:
             | llm
         )
         with st.chat_message("ai"):
-            chain.invoke(message)
+            try:
+                chain.invoke(message)
+            except NotFoundError:
+                st.error(
+                    "Deployment not found. For Azure OpenAI, set deployment env vars: "
+                    "OPENAI_DEPLOYMENT_GPT_4O_MINI, OPENAI_DEPLOYMENT_GPT_4O, "
+                    "OPENAI_DEPLOYMENT_GPT_4_TURBO."
+                )
 
 
 else:
