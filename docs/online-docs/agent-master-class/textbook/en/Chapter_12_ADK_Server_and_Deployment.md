@@ -4,14 +4,14 @@
 
 ## 12.0 Chapter Overview
 
-In this chapter, we learn the entire process of building AI agents using Google ADK (Agent Development Kit), operating them as servers, and finally deploying them to Google Cloud Vertex AI.
+In this chapter, we learn the entire process of building AI agents using Google ADK (Agent Development Kit), running them as servers, and ultimately deploying them to Google Cloud Vertex AI.
 
 Throughout the chapter, we cover two agent projects:
 
 1. **Email Refiner Agent** - A LoopAgent-based system where multiple specialized agents collaborate to iteratively improve emails
-2. **Travel Advisor Agent** - A tool-based travel advisor agent that provides weather, exchange rate, and attraction information
+2. **Travel Advisor Agent** - A tool-based travel advisor agent that provides weather, exchange rate, and tourist attraction information
 
-Through these two projects, we learn the following core topics:
+Through these two projects, we learn the following key topics:
 
 | Section | Topic | Key Concepts |
 |---------|-------|-------------|
@@ -28,13 +28,13 @@ Through these two projects, we learn the following core topics:
 
 ### Topic and Objectives
 
-Understand the basic structure of an ADK-based agent project and design each component of a multi-agent system called Email Refiner.
+Understand the basic structure of ADK-based agent projects and design each component of a multi-agent system called Email Refiner.
 
 ### Key Concepts
 
 #### 1) ADK Project Directory Structure
 
-ADK follows specific directory structure conventions. `agent.py` and `__init__.py` must exist inside the agent package, and `__init__.py` must import the `agent` module for ADK to automatically recognize the agent.
+ADK follows specific directory structure rules. The `agent.py` and `__init__.py` files must exist inside the agent package, and `__init__.py` must import the `agent` module for ADK to automatically recognize the agent.
 
 ```
 email-refiner-agent/
@@ -45,7 +45,7 @@ email-refiner-agent/
 └── email_refiner/           # Agent package
     ├── __init__.py          # Agent module registration
     ├── agent.py             # Agent definition
-    └── prompt.py            # Prompt and description collection
+    └── prompt.py            # Prompts and descriptions
 ```
 
 **Role of `__init__.py`:**
@@ -54,7 +54,7 @@ email-refiner-agent/
 from . import agent
 ```
 
-This single line is very important. The ADK framework automatically searches for the `agent` module within the package, and this explicit import in `__init__.py` is required for ADK's agent discovery to work.
+This single line is extremely important. The ADK framework automatically searches for the `agent` module within the package, and this explicit import in `__init__.py` is required for ADK's agent discovery to work.
 
 #### 2) Dependency Configuration (pyproject.toml)
 
@@ -80,7 +80,7 @@ dev = [
 Key dependencies:
 - **`google-adk`**: Google Agent Development Kit core library
 - **`google-genai`**: Google Generative AI client
-- **`litellm`**: A library that enables using various LLM providers (OpenAI, Anthropic, Google, etc.) through a unified interface
+- **`litellm`**: A library that allows using various LLM providers (OpenAI, Anthropic, Google, etc.) through a unified interface
 
 #### 3) Multi-Specialist Agent Design
 
@@ -125,23 +125,23 @@ literary_critic_agent = Agent(
 
 **Role of Each Agent:**
 
-| Agent | Role | Core Mission |
-|-------|------|-------------|
-| ClarityEditorAgent | Clarity Editor | Remove ambiguity, eliminate redundant phrases, make sentences concise |
+| Agent | Role | Core Task |
+|-------|------|-----------|
+| ClarityEditorAgent | Clarity Editor | Remove ambiguity, delete redundant phrases, make sentences concise |
 | ToneStylistAgent | Tone Stylist | Maintain warm and confident tone, preserve professionalism |
 | PersuationAgent | Persuasion Strategist | Strengthen CTAs, structure arguments, remove passive expressions |
-| EmailSynthesizerAgent | Email Synthesizer | Integrate all improvements into a single email |
+| EmailSynthesizerAgent | Email Synthesizer | Integrate all improvements into one email |
 | LiteraryCriticAgent | Literary Critic | Final quality review and approve/rework decision |
 
 #### 4) Prompt Design Pattern
 
-Prompts are managed by separating `description` (agent role description) and `instruction` (detailed directives). This follows the Separation of Concerns principle.
+Prompts are separated into `description` (agent role explanation) and `instruction` (detailed directives) for management. This follows the Separation of Concerns principle.
 
 ```python
-# Description - Briefly defines what the agent is
+# Description - briefly defines what the agent is
 CLARITY_EDITOR_DESCRIPTION = "Expert editor focused on clarity and simplicity."
 
-# Instruction - Describes in detail how the agent should behave
+# Instruction - details how the agent should behave
 CLARITY_EDITOR_INSTRUCTION = """
 You are an expert editor focused on clarity and simplicity. Your job is to
 eliminate ambiguity, redundancy, and make every sentence crisp and clear.
@@ -156,7 +156,7 @@ Provide your improved version with focus on clarity.
 """
 ```
 
-Particularly notable is the **pipeline pattern**. Each agent's instruction uses template variables that reference the output of previous agents:
+A particularly notable aspect is the **pipeline pattern**. Each agent's instruction uses template variables that reference the output of previous agents:
 
 ```python
 TONE_STYLIST_INSTRUCTION = """
@@ -181,13 +181,13 @@ Synthesize the best elements from all versions into one polished final email.
 """
 ```
 
-The variables `{clarity_output}`, `{tone_output}`, etc. connect with the `output_key` that we'll learn about in the next section.
+These variables like `{clarity_output}`, `{tone_output}` connect with the `output_key` that we will learn in the next section.
 
 ### Practice Points
 
 1. Create an ADK project directory yourself and build the structure that imports the agent module from `__init__.py`.
-2. Read each agent's prompt and draw a diagram of the email improvement pipeline flow.
-3. Use `LiteLlm` to replace the OpenAI model with another model (e.g., `anthropic/claude-3-haiku`).
+2. Read each agent's prompts and draw a diagram of the email improvement pipeline flow.
+3. Use `LiteLlm` to switch from OpenAI models to another model (e.g., `anthropic/claude-3-haiku`).
 
 ---
 
@@ -201,7 +201,7 @@ Build a system where multiple agents collaborate iteratively using ADK's `LoopAg
 
 #### 1) output_key - Data Transfer Between Agents
 
-`output_key` specifies the key name for storing an agent's output in the session state. The template variables `{clarity_output}`, `{tone_output}`, etc. seen in the previous section are populated through this `output_key`.
+`output_key` specifies the key name for storing an agent's output in the session state. The template variables `{clarity_output}`, `{tone_output}`, etc. seen in the previous section's prompts are populated through this `output_key`.
 
 ```python
 MODEL = LiteLlm(model="openai/gpt-4o")
@@ -265,7 +265,7 @@ LiteraryCriticAgent ─── Quality judgment
 
 #### 2) ToolContext and escalate - Loop Termination Mechanism
 
-`LoopAgent` loops indefinitely by default (or up to `max_iterations`), and the `escalate` mechanism is used to break out of the loop under specific conditions.
+`LoopAgent` repeats indefinitely by default (or up to `max_iterations`). To escape the loop under specific conditions, the `escalate` mechanism is used.
 
 ```python
 from google.adk.tools.tool_context import ToolContext
@@ -277,9 +277,9 @@ async def escalate_email_complete(tool_context: ToolContext):
 ```
 
 **Key Points:**
-- `ToolContext` is a context object that ADK automatically injects when executing a tool.
+- `ToolContext` is a context object that ADK automatically injects when executing tools.
 - Setting `tool_context.actions.escalate = True` immediately terminates the current loop.
-- This tool is only given to the `LiteraryCriticAgent`, so the loop only terminates when the critic is satisfied with the email quality.
+- This tool is given only to `LiteraryCriticAgent`, so the loop only terminates when the critic is satisfied with the email quality.
 
 ```python
 literary_critic_agent = Agent(
@@ -287,7 +287,7 @@ literary_critic_agent = Agent(
     description=LITERARY_CRITIC_DESCRIPTION,
     instruction=LITERARY_CRITIC_INSTRUCTION,
     tools=[
-        escalate_email_complete,   # Escalate tool assigned
+        escalate_email_complete,   # Escalate tool provided
     ],
     model=MODEL,
 )
@@ -300,12 +300,12 @@ All sub-agents are wrapped in a `LoopAgent` to complete the iterative execution 
 ```python
 email_refiner_agent = LoopAgent(
     name="EmailRefinerAgent",
-    max_iterations=50,                    # Maximum 50 iterations (safety measure)
+    max_iterations=50,                    # Maximum 50 iterations (safety guard)
     description=EMAIL_OPTIMIZER_DESCRIPTION,
     sub_agents=[
         clarity_agent,                     # 1. Clarity improvement
         tone_stylist_agent,                # 2. Tone adjustment
-        persuation_agent,                  # 3. Persuasion strengthening
+        persuation_agent,                  # 3. Persuasion enhancement
         email_synthesizer_agent,           # 4. Synthesis
         literary_critic_agent,             # 5. Final review (can escalate)
     ],
@@ -314,11 +314,11 @@ email_refiner_agent = LoopAgent(
 root_agent = email_refiner_agent
 ```
 
-**Importance of the `root_agent` variable:** The ADK framework automatically searches for a variable named `root_agent` and uses it as the entry point agent. You must use this name.
+**Importance of the `root_agent` variable:** The ADK framework automatically searches for a variable named `root_agent` and uses it as the entry point agent. This name must be used.
 
-#### 4) Prompt Reinforcement - Ensuring LLM Actually Calls the Tool
+#### 4) Prompt Reinforcement - Ensuring the LLM Actually Calls Tools
 
-In practice, the LLM may "say" it will call a tool but not actually call it. To prevent this, the prompt was reinforced:
+In practice, LLMs may "say" they will call a tool but not actually do it. To prevent this, the prompt was reinforced:
 
 ```python
 LITERARY_CRITIC_INSTRUCTION = """
@@ -334,13 +334,13 @@ When the email is ready, CALL the tool: `escalate_email_complete()`
 """
 ```
 
-Using uppercase and emphatic expressions to clearly instruct the LLM to execute the tool call is a very useful prompt engineering technique in practice.
+Using uppercase and emphasis expressions to clearly instruct the LLM to execute the tool call is a very useful prompt engineering technique in practice.
 
 ### Practice Points
 
 1. Lower `max_iterations` to 3 and run it to observe the behavior when the loop reaches the maximum iteration count.
-2. See what happens if you only provide a return value instead of setting `escalate = True` in the `escalate_email_complete` function.
-3. Remove `output_key` and run to confirm that the next agent cannot reference the previous result.
+2. Check what happens if you only return a value without setting `escalate = True` in the `escalate_email_complete` function.
+3. Remove `output_key` and run it to confirm that the next agent cannot reference the previous result.
 
 ---
 
@@ -451,7 +451,7 @@ async def get_local_attractions(
 **Tool Function Design Patterns:**
 - All tool functions are defined as `async` asynchronous functions.
 - The first parameter must be `tool_context: ToolContext` (automatically injected by ADK).
-- The docstring serves to explain the tool's purpose to the LLM.
+- The docstring serves as the explanation of the tool's purpose to the LLM.
 - Return values are in dictionary format, which the LLM interprets to respond to the user.
 
 Agent registration:
@@ -481,9 +481,9 @@ ADK can instantly launch a built-in web server with the `adk api_server` command
 adk api_server email-refiner-agent/
 ```
 
-Once the server starts, it is accessible at `http://127.0.0.1:8000`.
+Once the server starts, it's accessible at `http://127.0.0.1:8000`.
 
-#### 3) Interacting with Agents via REST API
+#### 3) Agent Interaction via REST API
 
 **Creating a Session:**
 
@@ -510,7 +510,7 @@ POST /apps/{app_name}/users/{user_id}/sessions
 **Sending Messages (Synchronous Mode):**
 
 ```python
-SESSION_ID = "ce085ce3-9637-4eca-b7a1-b0be58fa39f1"  # ID received during session creation
+SESSION_ID = "ce085ce3-9637-4eca-b7a1-b0be58fa39f1"  # ID received from session creation
 
 message = {
     "appName": APP_NAME,
@@ -543,8 +543,8 @@ for event in data:
     print("=" * 60)
 ```
 
-Responses come as an array of events, where each event's `content.parts` contains:
-- `functionCall`: Information about tools called by the agent
+The response is in event array format, and within each event's `content.parts`:
+- `functionCall`: Information about the tool called by the agent
 - `text`: The agent's text response
 
 #### 4) Dependency Updates
@@ -563,9 +563,9 @@ dependencies = [
 
 ### Practice Points
 
-1. Run the server with the `adk api_server` command and visit `http://127.0.0.1:8000/docs` in your browser to check the auto-generated Swagger UI.
+1. Run the server with `adk api_server` and visit `http://127.0.0.1:8000/docs` in your browser to check the auto-generated Swagger UI.
 2. Create a session and send multiple messages sequentially to verify that conversation context is maintained.
-3. Send API requests to the `email_refiner` agent using a different `APP_NAME`.
+3. Try sending API requests to the `email_refiner` agent using a different `APP_NAME`.
 
 ---
 
@@ -573,22 +573,22 @@ dependencies = [
 
 ### Topic and Objectives
 
-Learn how to handle real-time streaming responses based on Server-Sent Events using the `/run_sse` endpoint instead of the synchronous `/run` endpoint.
+Learn how to handle Server-Sent Events based real-time streaming responses using the `/run_sse` endpoint instead of the synchronous `/run` endpoint.
 
 ### Key Concepts
 
-#### 1) What are SSE (Server-Sent Events)?
+#### 1) What is SSE (Server-Sent Events)?
 
-SSE is an HTTP-based protocol for unidirectional real-time data streaming from server to client. Unlike WebSocket, it uses regular HTTP connections, making implementation simple.
+SSE is an HTTP-based protocol for unidirectional real-time data streaming from server to client. Unlike WebSocket, it uses regular HTTP connections, making implementation simpler.
 
 **Synchronous Mode vs SSE Mode Comparison:**
 
-| Feature | `/run` (Synchronous) | `/run_sse` (Streaming) |
-|---------|---------------------|----------------------|
-| Response Method | Returns entire response at once | Sends in real-time as event units |
-| User Experience | Wait until response is complete | Monitor progress in real-time |
-| Tool Call Observation | Included in result | Observe call process in real-time |
-| Suitable For | Short responses, backend processing | Long responses, frontend UI |
+| Characteristic | `/run` (Synchronous) | `/run_sse` (Streaming) |
+|---------------|---------------------|----------------------|
+| Response method | Returns entire response at once | Sends in real-time by event unit |
+| User experience | Wait until response is complete | View progress in real-time |
+| Tool call observation | Included in result | Observe call process in real-time |
+| Best suited for | Short responses, backend processing | Long responses, frontend UI |
 
 #### 2) SSE Client Implementation
 
@@ -610,11 +610,11 @@ message = {
         "parts": [{"text": "What is the weather there?"}],
         "role": "user",
     },
-    "streaming": True,              # Enable streaming flag
+    "streaming": True,              # Streaming activation flag
 }
 
 response = requests.post(
-    f"{BASE_URL}/run_sse",           # SSE-dedicated endpoint
+    f"{BASE_URL}/run_sse",           # SSE-specific endpoint
     json=message,
     stream=True,                     # Enable requests streaming mode
 )
@@ -637,11 +637,11 @@ for event in client.events():
 
 **Code Differences from Synchronous Mode:**
 
-1. **Add `"streaming": True` to request message** - Informs the server of streaming mode.
-2. **Endpoint change**: Use `/run_sse` instead of `/run`
-3. **`stream=True` option**: Enable streaming mode on `requests.post()`
-4. **Wrap with `sseclient.SSEClient`**: Parse the response as an SSE event stream
-5. **Event loop**: Process events one by one with `client.events()`
+1. **`"streaming": True` added to the request message** - Informs the server of streaming mode.
+2. **Endpoint change**: `/run_sse` instead of `/run`
+3. **`stream=True` option**: Enables streaming mode on `requests.post()`
+4. **Wrapped with `sseclient.SSEClient`**: Parses the response as an SSE event stream
+5. **Event loop**: Processes events one by one with `client.events()`
 
 #### 3) SSE Event Structure
 
@@ -662,7 +662,7 @@ Each SSE event contains a `data` field in JSON format:
 }
 ```
 
-Or text response:
+Or a text response:
 
 ```json
 {
@@ -678,9 +678,9 @@ Or text response:
 
 ### Practice Points
 
-1. Send the same question in both synchronous mode (`/run`) and SSE mode (`/run_sse`) and compare the response time and user experience differences.
-2. While receiving SSE events, observe that tool call (functionCall) events arrive before text responses.
-3. Try writing code that parses the HTTP stream directly instead of using `sseclient-py` (using `response.iter_lines()`).
+1. Send the same question in synchronous mode (`/run`) and SSE mode (`/run_sse`), and compare the response time and user experience differences.
+2. Observe that tool calls (functionCall) arrive before text responses when receiving SSE events.
+3. Write code that parses the HTTP stream directly instead of using `sseclient-py` (using `response.iter_lines()`).
 
 ---
 
@@ -688,13 +688,13 @@ Or text response:
 
 ### Topic and Objectives
 
-Learn how to run agents directly in pure Python code using the `Runner` class without the ADK CLI or API server. Also covers persistent session management via `DatabaseSessionService` and `InMemoryArtifactService`.
+Learn how to run agents directly in pure Python code using the `Runner` class without the ADK CLI or API server. Also covers persistent session management through `DatabaseSessionService` and `InMemoryArtifactService`.
 
 ### Key Concepts
 
-#### 1) Role of the Runner
+#### 1) Role of Runner
 
-`Runner` is the core orchestrator for agent execution. Use it when you want to run agents directly within code without an API server. The Runner manages:
+`Runner` is the core orchestrator for agent execution. It's used when you want to run agents directly within your code without an API server. Runner manages:
 - Agent execution flow
 - Session state management
 - Artifact (file, etc.) management
@@ -715,7 +715,7 @@ session_service = DatabaseSessionService(db_url="sqlite:///./session.db")
 
 **Advantages of `DatabaseSessionService`:**
 - Session data is persistently stored in a SQLite file (`session.db`).
-- Previous conversations can be resumed even after server restart.
+- Previous conversations can be resumed after server restart.
 - Changing `db_url` to PostgreSQL, etc. makes it usable in production environments.
 
 #### 3) Session Creation and State Initialization
@@ -730,7 +730,7 @@ session = await session_service.create_session(
 )
 ```
 
-You can set initial values in the `state` dictionary. These values are referenced as template variables in the agent's instruction:
+Initial values can be set in the `state` dictionary. These values are referenced as template variables in the agent's instruction:
 
 ```python
 # prompt.py
@@ -746,7 +746,7 @@ Their name is {user_name}
 
 `{user_name}` is automatically substituted with the `"user_name"` value from the session state. This is ADK's **state-based prompt template** feature.
 
-#### 4) Running Agents via Runner
+#### 4) Agent Execution via Runner
 
 ```python
 from google.genai import types
@@ -754,7 +754,7 @@ from google.adk.runners import Runner
 
 # Create Runner
 runner = Runner(
-    agent=travel_advisor_agent,           # Agent to run
+    agent=travel_advisor_agent,           # Agent to execute
     session_service=session_service,      # Session management service
     app_name="weather_agent",             # App name (must match session service)
     artifact_service=in_memory_service_py, # Artifact management service
@@ -768,7 +768,7 @@ message = types.Content(
     ],
 )
 
-# Asynchronous streaming execution
+# Async streaming execution
 async for event in runner.run_async(
     user_id="u_123",
     session_id=session.id,
@@ -781,14 +781,14 @@ async for event in runner.run_async(
         print(event.get_function_responses())
 ```
 
-**Event Processing Pattern:**
+**Event Handling Patterns:**
 - `event.is_final_response()`: Check if it's the final text response
-- `event.get_function_calls()`: Check tool call events
-- `event.get_function_responses()`: Check tool response events
+- `event.get_function_calls()`: Check for tool call events
+- `event.get_function_responses()`: Check for tool response events
 
 #### 5) Execution Result Analysis
 
-Looking at the actual execution results, you can clearly observe the agent's operation process:
+Looking at actual execution results, you can clearly observe the agent's operation process:
 
 ```
 # Step 1: Agent calls 3 tools simultaneously (parallel tool calling)
@@ -796,7 +796,7 @@ Looking at the actual execution results, you can clearly observe the agent's ope
  FunctionCall(name='get_exchange_rate', args={'from_currency': 'USD', 'to_currency': 'VND', 'amount': 1}),
  FunctionCall(name='get_local_attractions', args={'location': 'Vietnam'})]
 
-# Step 2: Receive tool responses
+# Step 2: Tool responses received
 [FunctionResponse(name='get_weather', response=<dict len=6>),
  FunctionResponse(name='get_exchange_rate', response=<dict len=6>),
  FunctionResponse(name='get_local_attractions', response={
@@ -804,7 +804,7 @@ Looking at the actual execution results, you can clearly observe the agent's ope
      mandatory input parameters are not present: category..."
  })]
 
-# Step 3: Final response (synthesizes tool results into natural language)
+# Step 3: Final response (synthesizes tool results into natural language answer)
 Hello Nico! Here's some information to help you prepare for your trip to Vietnam:
 
 ### Weather in Vietnam
@@ -813,14 +813,14 @@ Hello Nico! Here's some information to help you prepare for your trip to Vietnam
 ...
 ```
 
-Notable points:
+Notable observations:
 1. The agent reads `{user_name}` from the session state and greets with "Hello Nico!".
-2. It calls 3 tools **in parallel** for efficient information gathering.
-3. Although a `category` parameter missing error occurred with `get_local_attractions`, the agent handled it on its own and directly generated general Vietnam tourist information.
+2. It calls 3 tools **in parallel** to efficiently gather information.
+3. Even though `get_local_attractions` had a `category` parameter missing error, the agent handled it on its own by directly generating general Vietnam tourist attraction information.
 
 ### Practice Points
 
-1. Replace `DatabaseSessionService` with `InMemorySessionService` and confirm that sessions are not preserved after server restart.
+1. Replace `DatabaseSessionService` with `InMemorySessionService` and verify that sessions are not preserved after server restart.
 2. Add `"preferred_language": "Korean"` to `state` and use it in the prompt to make the agent respond in Korean.
 3. Find out how to use the synchronous `run` method instead of `run_async`.
 4. Use `output_key` to save agent responses to session state and reference them in the next conversation.
@@ -831,16 +831,16 @@ Notable points:
 
 ### Topic and Objectives
 
-Learn how to deploy built ADK agents to Google Cloud's Vertex AI Agent Engine for operation in a production environment.
+Learn how to deploy ADK agents to Google Cloud's Vertex AI Agent Engine for production environment operation.
 
 ### Key Concepts
 
 #### 1) What is Vertex AI Agent Engine?
 
-Vertex AI Agent Engine (formerly Reasoning Engine) is a Google Cloud service for hosting and managing AI agents. Deploying ADK agents to the cloud provides:
-- No server infrastructure management needed
-- Auto-scaling
-- Leveraging Google Cloud's security and monitoring features
+Vertex AI Agent Engine (formerly Reasoning Engine) is a service for hosting and managing AI agents on Google Cloud. Deploying agents built with ADK to the cloud provides:
+- No server infrastructure management required
+- Automatic scaling
+- Google Cloud security and monitoring capabilities
 - Remote session management and execution
 
 #### 2) Deployment Script (deploy.py)
@@ -892,16 +892,16 @@ remote_app = vertexai.agent_engines.create(
 
 | Step | Code | Description |
 |------|------|-------------|
-| 1. Environment Setup | `dotenv.load_dotenv()` | Load environment variables like API keys from `.env` file |
-| 2. Vertex AI Init | `vertexai.init(...)` | Configure project, region, staging bucket |
-| 3. App Wrapping | `reasoning_engines.AdkApp(...)` | Wrap ADK agent in Vertex AI compatible format |
+| 1. Environment setup | `dotenv.load_dotenv()` | Load environment variables like API keys from `.env` file |
+| 2. Vertex AI initialization | `vertexai.init(...)` | Set project, region, staging bucket |
+| 3. App wrapping | `reasoning_engines.AdkApp(...)` | Wrap ADK agent in Vertex AI compatible format |
 | 4. Deployment | `agent_engines.create(...)` | Execute actual deployment to cloud |
 
 **Role of `extra_packages` parameter:**
 Includes the local package directory (`travel_advisor_agent`) in the deployment bundle. This is necessary for the agent code to be importable in the cloud environment.
 
-**Secret Management via `env_vars`:**
-Sensitive information like API keys is passed as environment variables. It's important for security not to hardcode them directly in the code.
+**Secret management via `env_vars`:**
+Sensitive information like API keys is passed as environment variables. Not hard-coding them directly in code is important for security.
 
 #### 3) Additional Dependencies
 
@@ -919,7 +919,7 @@ dependencies = [
 ]
 ```
 
-- **`cloudpickle`**: Used to serialize Python objects for transmission to the cloud
+- **`cloudpickle`**: Used to serialize Python objects for transfer to the cloud
 - **`google-cloud-aiplatform[adk,agent-engines]`**: Includes Vertex AI's ADK and Agent Engine features
 
 #### 4) Remote Agent Management and Execution (remote.py)
@@ -936,7 +936,7 @@ vertexai.init(
     location=LOCATION,
 )
 
-# Query deployment list
+# List deployments
 # deployments = agent_engines.list()
 # for deployment in deployments:
 #     print(deployment)
@@ -971,17 +971,17 @@ SESSION_ID = "5724511082748313600"
 
 | Method | Purpose |
 |--------|---------|
-| `agent_engines.list()` | Query all deployments |
-| `agent_engines.get(id)` | Get specific deployment |
-| `remote_app.create_session(user_id=...)` | Create remote session |
-| `remote_app.stream_query(...)` | Query with streaming |
-| `remote_app.delete(force=True)` | Delete deployment |
+| `agent_engines.list()` | List all deployments |
+| `agent_engines.get(id)` | Get a specific deployment |
+| `remote_app.create_session(user_id=...)` | Create a remote session |
+| `remote_app.stream_query(...)` | Query in streaming mode |
+| `remote_app.delete(force=True)` | Delete a deployment |
 
 ### Practice Points
 
 1. Create a GCP project and GCS bucket, and actually deploy an agent.
-2. Deploy with `enable_tracing=True` and check the tracing logs in the Google Cloud Console.
-3. Compare response times between `remote_app.stream_query()` and local Runner execution.
+2. After deploying with `enable_tracing=True`, check the tracing logs in the Google Cloud Console.
+3. Compare the response time of `remote_app.stream_query()` with local Runner execution.
 4. Create sessions with multiple user IDs and verify that session isolation works correctly.
 
 ---
@@ -1017,8 +1017,8 @@ SESSION_ID = "5724511082748313600"
 |-----------------|-------------|-------------|
 | `adk web` | Test agent with web UI | Quick testing during development |
 | `adk api_server` | Run REST API server | Frontend integration, local service |
-| `Runner` (code mode) | Execute directly from Python code | Custom application integration |
-| Vertex AI Deployment | Cloud production environment | Production service operation |
+| `Runner` (Code mode) | Execute directly from Python code | Custom application integration |
+| Vertex AI deployment | Cloud production environment | Production service operation |
 
 ### 3. Key ADK Classes/Components Summary
 
@@ -1026,14 +1026,14 @@ SESSION_ID = "5724511082748313600"
 |-----------|------|
 | `Agent` | Single agent definition (name, description, instruction, model, tools) |
 | `LoopAgent` | Orchestrator that iteratively executes sub-agents |
-| `LiteLlm` | Use various LLM providers through a unified interface |
-| `ToolContext` | Access session state and actions from tool functions |
+| `LiteLlm` | Unified interface for various LLM providers |
+| `ToolContext` | Access session state, actions from tool functions |
 | `output_key` | Key for saving agent output to session state |
-| `escalate` | Early termination of loops or agent chains |
-| `Runner` | Orchestrator that manages agent execution from code |
+| `escalate` | Early termination of loop or agent chain |
+| `Runner` | Orchestrator for managing agent execution from code |
 | `DatabaseSessionService` | DB-based persistent session management |
 | `InMemoryArtifactService` | Memory-based artifact management |
-| `reasoning_engines.AdkApp` | Wraps ADK agent for Vertex AI deployment format |
+| `reasoning_engines.AdkApp` | Wraps ADK agent for Vertex AI deployment |
 
 ### 4. Core Data Flow Pattern
 
@@ -1049,7 +1049,7 @@ This pattern is the most important mechanism for transferring data between agent
 
 ### Exercise 1: Code Review Agent (Using LoopAgent)
 
-Referencing the Email Refiner Agent structure, create a **Code Review Agent**.
+Using the Email Refiner Agent structure as reference, create a **code review agent**.
 
 **Requirements:**
 - `SecurityReviewAgent`: Security vulnerability review
@@ -1059,28 +1059,28 @@ Referencing the Email Refiner Agent structure, create a **Code Review Agent**.
 - `ApprovalAgent`: Final approve/reject decision (using escalate tool)
 
 **Hints:**
-- Set `output_key` on each agent to save review results to state
-- Give `ApprovalAgent` an `escalate_review_complete` tool
+- Set `output_key` for each agent to save review results to state
+- Provide `escalate_review_complete` tool to `ApprovalAgent`
 - Set `LoopAgent`'s `max_iterations` appropriately
 
 ### Exercise 2: API Server and SSE Client
 
-Extend the Travel Advisor Agent to add **restaurant recommendation functionality**, and implement an API server and SSE client.
+Extend the Travel Advisor Agent by adding **restaurant recommendation functionality**, and implement the API server and SSE client.
 
 **Requirements:**
-1. Add a `get_restaurant_recommendations(location, cuisine_type)` tool function
+1. Add `get_restaurant_recommendations(location, cuisine_type)` tool function
 2. Run the server with `adk api_server`
 3. Receive real-time streaming responses with an SSE client
 4. Distinguish between tool call events and text response events for UI display
 
-### Exercise 3: Interactive CLI Using Runner
+### Exercise 3: Interactive CLI with Runner
 
-Create a CLI program that interactively communicates with the agent in the terminal using Runner.
+Create a CLI program that interactively communicates with an agent in the terminal using Runner.
 
 **Requirements:**
 1. Use `DatabaseSessionService` for persistent conversation history storage
-2. Choose to continue an existing session or create a new session at program start
-3. Store the user's preferred language in `state` and use it in the prompt
+2. At program start, choose to resume an existing session or create a new one
+3. Store user preferred language in `state` and use it in the prompt
 4. Print the session ID on `Ctrl+C` exit so it can be resumed next time
 
 ### Exercise 4: Vertex AI Deployment (Advanced)
@@ -1091,13 +1091,13 @@ Actually deploy the Travel Advisor Agent to Vertex AI and use it remotely.
 1. Create a GCP project and enable the Vertex AI API
 2. Create a GCS bucket (for staging)
 3. Write a deployment script referencing `deploy.py`
-4. Create a remote session and execute queries referencing `remote.py`
-5. Compare and analyze the deployed agent's response time with local execution
+4. Create remote sessions and execute queries referencing `remote.py`
+5. Compare and analyze response times between the deployed agent and local execution
 
 **Cautions:**
 - GCP charges may apply, so be sure to delete with `remote_app.delete(force=True)` after testing
-- Never hardcode API keys in code; always pass them as environment variables
+- Never hard-code API keys in code; always pass them as environment variables
 
 ---
 
-> **Next Chapter Preview:** The next chapter covers the Agent Evaluation framework, where we learn how to systematically measure and improve agent response quality.
+> **Next Chapter Preview:** The next chapter covers the agent evaluation framework, where we learn how to systematically measure and improve agent response quality.
