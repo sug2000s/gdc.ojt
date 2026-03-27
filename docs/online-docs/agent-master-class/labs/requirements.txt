@@ -1,0 +1,9 @@
+openai>=2.0.0
+python-dotenv>=1.0.0
+jupyter
+ipykernel
+langgraph >= 0.6.6
+langchain[openai] >= 0.3.27
+grandalf
+pyppeteer>=2.0.0
+nest_asyncio>=1.6.0
