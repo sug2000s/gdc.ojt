@@ -6,6 +6,9 @@ __pycache__/
 .ipynb_checkpoints/
 .cache/
 cache.db
+*.db
+*.db-shm
+*.db-wal
 *.sqlite
 .DS_Store
 build/
