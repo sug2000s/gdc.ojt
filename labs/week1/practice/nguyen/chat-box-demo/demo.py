@@ -17,7 +17,6 @@ from PyPDF2 import PdfReader
 load_dotenv()
 llm = init_chat_model(f"openai:{os.getenv('OPENAI_MODEL_NAME')}")
 
-# Image-only / scanned PDF: pages sent to vision (cost / time cap).
 PDF_OCR_MAX_PAGES = int(os.getenv("PDF_OCR_MAX_PAGES", "10"))
 
 
@@ -215,28 +214,10 @@ for msg in st.session_state.messages:
 
 with st.sidebar:
     uploaded_file = st.file_uploader(
-        "📎 Upload .txt / .pdf / .docx (scanned PDF: vision, max pages = PDF_OCR_MAX_PAGES)",
+        "📎 Upload .txt / .pdf / .docx",
         type=["txt", "docx", "pdf"],
         key=st.session_state.upload_key,
     )
-
-# if uploaded_file is not None:
-#     try:
-#         file_content = read_uploaded_file(uploaded_file)
-
-#         if not file_content or not file_content.strip():
-#             st.error("❌ File empty or unreadable.")
-#         else:
-#             st.session_state.uploaded_file_content = file_content
-
-#             with st.chat_message("assistant"):
-#                 st.markdown(
-#                     f"📎 Uploaded: **{uploaded_file.name}**\n\n"
-#                     "👉 Now type: `translate to en` (or vi/ko)"
-#                 )
-
-#     except Exception as e:
-#         st.error(f"❌ File error: {e}")
 
 if uploaded_file is not None:
     try:
