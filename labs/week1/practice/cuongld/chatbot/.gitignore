@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+
+# Local env / secrets
+.env
+.env.*
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+
+# Streamlit
+.streamlit/
+
+# SQLite checkpoint files (local state)
+*.db
+*.db-shm
+*.db-wal
+
+# OS / editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "seoul_travel_agent": "./graph.py:graph"
+  },
+  "env": ".env"
+}
