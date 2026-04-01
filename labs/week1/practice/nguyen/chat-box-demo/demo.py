@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import base64
 import os
 import streamlit as st
 import sqlite3
@@ -8,9 +9,64 @@ from pydantic import BaseModel
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langchain.chat_models import init_chat_model
+from langchain_core.messages import HumanMessage
+
+from docx import Document
+from PyPDF2 import PdfReader
 
 load_dotenv()
 llm = init_chat_model(f"openai:{os.getenv('OPENAI_MODEL_NAME')}")
+
+# Image-only / scanned PDF: pages sent to vision (cost / time cap).
+PDF_OCR_MAX_PAGES = int(os.getenv("PDF_OCR_MAX_PAGES", "10"))
+
+
+def _extract_pdf_text_layer(file_bytes: bytes) -> str:
+    from io import BytesIO
+
+    reader = PdfReader(BytesIO(file_bytes))
+    parts = []
+    for page in reader.pages:
+        parts.append(page.extract_text() or "")
+    return "\n".join(parts)
+
+
+def _extract_pdf_text_via_vision(file_bytes: bytes) -> str:
+    import fitz
+
+    doc = fitz.open(stream=file_bytes, filetype="pdf")
+    total = doc.page_count
+    n = min(total, PDF_OCR_MAX_PAGES)
+    chunks = []
+    for i in range(n):
+        page = doc[i]
+        pix = page.get_pixmap(dpi=120)
+        b64 = base64.b64encode(pix.tobytes("png")).decode("ascii")
+        msg = HumanMessage(
+            content=[
+                {
+                    "type": "text",
+                    "text": (
+                        "Extract every readable line of text from this PDF page image. "
+                        "Preserve paragraph breaks. Output only the text, no preamble."
+                    ),
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/png;base64,{b64}"},
+                },
+            ]
+        )
+        r = llm.invoke([msg])
+        chunk = r.content if hasattr(r, "content") else str(r)
+        chunks.append((chunk or "").strip())
+    doc.close()
+    text = "\n\n".join(c for c in chunks if c)
+    if total > n:
+        text += (
+            f"\n\n[... skipped {total - n} page(s); set PDF_OCR_MAX_PAGES to raise limit]"
+        )
+    return text
 
 class TranslateState(TypedDict):
     user_input: str
@@ -29,16 +85,39 @@ class DetectLangOutput(BaseModel):
 class TranslateOutput(BaseModel):
     translated: str
 
+@st.cache_data(show_spinner="📂 Reading file...")
+def parse_uploaded_file(file_bytes: bytes, file_type: str):
+    file_type = file_type.lower()
+    if file_type == "txt":
+        return file_bytes.decode("utf-8", errors="ignore")
+    elif file_type == "docx":
+        from io import BytesIO
+        doc = Document(BytesIO(file_bytes))
+        return "\n".join([p.text for p in doc.paragraphs])
+    elif file_type == "pdf":
+        text = _extract_pdf_text_layer(file_bytes)
+        if not text.strip():
+            text = _extract_pdf_text_via_vision(file_bytes)
+        return text
+    return None
+
 def detect_intent_and_language(state: dict):
     structured_llm = llm.with_structured_output(DetectLangOutput)
 
     prompt = (
         "You are a translation assistant.\n"
         "Extract:\n"
-        "- src_lang: en | vi | ko\n"
-        "- tgt_lang: en | vi | ko\n"
-        "- content: text only\n\n"
-        f"User: {state['user_input']}"
+        "- src_lang: en | vi | ko (source language of the text to translate)\n"
+        "- tgt_lang: en | vi | ko (target language the user wants)\n"
+        "- content: ONLY the actual text to translate (no instruction words)\n\n"
+        "Rules:\n"
+        "- If the user says translate to ko / Korean / 한국어 / tiếng Hàn → tgt_lang must be ko.\n"
+        "- If the user says translate to vi / Vietnamese / tiếng Việt → tgt_lang must be vi.\n"
+        "- If the user says translate to en / English / tiếng Anh → tgt_lang must be en.\n"
+        "- If the message has a 'User instruction:' line and 'Text to translate:' block, "
+        "use the instruction for direction; put the block text in content.\n"
+        "- If tgt_lang is clear from the user but src_lang is not, infer src_lang from the content.\n\n"
+        f"Message:\n{state['user_input']}"
     )
 
     try:
@@ -51,19 +130,6 @@ def detect_intent_and_language(state: dict):
         }
 
     return res
-
-# def translate_text(state: dict):
-#     src = state.get("src_lang")
-#     tgt = state.get("tgt_lang")
-#     text = state.get("content")
-
-#     structured_llm = llm.with_structured_output(TranslateOutput)
-
-#     prompt = f"Translate from {src} to {tgt}:\n{text}"
-
-#     res = structured_llm.invoke(prompt)
-#     state["translated"] = res.translated
-#     return state
 
 def translate_text(state: dict):
     src = state.get("src_lang")
@@ -87,7 +153,6 @@ def translate_text(state: dict):
     print("[DEBUG: tone]", tone)
     print("[DEBUG: text]", text)
 
-    # xử lý content
     translated = res.content if hasattr(res, "content") else str(res)
 
     state["translated"] = translated.strip()
@@ -126,23 +191,68 @@ if "thread_id" not in st.session_state:
 if "pending_translation" not in st.session_state:
     st.session_state.pending_translation = None
 
-if "debug" not in st.session_state:
-    st.session_state.debug = False
+if "uploaded_file_content" not in st.session_state:
+    st.session_state.uploaded_file_content = None
 
-st.sidebar.checkbox("Show Debug", key="debug")
+if "upload_key" not in st.session_state:
+    st.session_state.upload_key = "file_uploader"
 
+# --- SIDEBAR ---
 if st.sidebar.button("🆕 New Chat"):
     st.session_state.messages = [
         {"role": "system", "content": "You are a helpful assistant."}
     ]
     st.session_state.thread_id = str(uuid.uuid4())
     st.session_state.pending_translation = None
+    st.session_state.uploaded_file_content = None
+    st.session_state.upload_key = f"file_uploader_{str(uuid.uuid4())}"
 
 for msg in st.session_state.messages:
     if msg["role"] == "system":
         continue
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
+
+with st.sidebar:
+    uploaded_file = st.file_uploader(
+        "📎 Upload .txt / .pdf / .docx (scanned PDF: vision, max pages = PDF_OCR_MAX_PAGES)",
+        type=["txt", "docx", "pdf"],
+        key=st.session_state.upload_key,
+    )
+
+# if uploaded_file is not None:
+#     try:
+#         file_content = read_uploaded_file(uploaded_file)
+
+#         if not file_content or not file_content.strip():
+#             st.error("❌ File empty or unreadable.")
+#         else:
+#             st.session_state.uploaded_file_content = file_content
+
+#             with st.chat_message("assistant"):
+#                 st.markdown(
+#                     f"📎 Uploaded: **{uploaded_file.name}**\n\n"
+#                     "👉 Now type: `translate to en` (or vi/ko)"
+#                 )
+
+#     except Exception as e:
+#         st.error(f"❌ File error: {e}")
+
+if uploaded_file is not None:
+    try:
+        file_bytes = uploaded_file.read()
+        file_content = parse_uploaded_file(file_bytes, uploaded_file.name.split(".")[-1])
+        if not file_content or not file_content.strip():
+            st.error("❌ File empty or unreadable.")
+        else:
+            st.session_state.uploaded_file_content = file_content
+            with st.chat_message("assistant"):
+                st.markdown(
+                    f"📎 Uploaded: **{uploaded_file.name}**\n\n"
+                    "👉 Now type: `translate to en` (or vi/ko)"
+                )
+    except Exception as e:
+        st.error(f"❌ File error: {e}")
 
 user_input = st.chat_input("Type something...")
 
@@ -171,36 +281,58 @@ if user_input:
                 try:
                     out = translate_text(dict(state))
                     translated = out.get("translated", "")
-                    if not translated:
-                        response = "❌ Could not translate."
-                    else:
-                        response = (
-                            f"✅ **{translated}**"
-                        )
+                    response = f"✅ **{translated}**" if translated else "❌ Failed"
                 except Exception as e:
                     response = f"❌ Error: {e}"
             st.markdown(response)
             st.session_state.messages.append({"role": "assistant", "content": response})
 
         st.session_state.pending_translation = None
+        st.session_state.uploaded_file_content = None
 
     elif is_translate_cmd:
+        # if st.session_state.uploaded_file_content:
+        #     input_text = (
+        #         f"User instruction: {user_input}\n\n"
+        #         f"Text to translate:\n{st.session_state.uploaded_file_content}"
+        #     )
+        # else:
+        #     input_text = user_input
+        words = user_input.strip().split()
+        use_file = (
+            st.session_state.uploaded_file_content
+            and len(words) <= 3
+        )
+        
+        if use_file:
+            input_text = (
+                f"User instruction: {user_input}\n\n"
+                f"Text to translate:\n{st.session_state.uploaded_file_content}"
+                )
+            st.session_state.uploaded_file_content = None
+        else:
+            input_text = user_input
 
         with st.chat_message("assistant"):
-            with st.spinner("🔍 Detecting languages..."):
+            with st.spinner("🔍 Detecting..."):
                 try:
-                    detect_state = {"user_input": user_input}
+                    detect_state = {"user_input": input_text}
                     detected = detect_intent_and_language(detect_state)
                     src = detected.get("src_lang")
                     tgt = detected.get("tgt_lang")
-                    content = detected.get("content") or ""
-                    preview = content if len(content) <= 200 else content[:200] + "…"
+                    content = (detected.get("content") or "").strip()
+                    if (
+                        st.session_state.uploaded_file_content
+                        and not content
+                    ):
+                        content = st.session_state.uploaded_file_content.strip()
                     st.session_state.pending_translation = {
-                        "user_input": user_input,
+                        "user_input": input_text,
                         "src_lang": src,
                         "tgt_lang": tgt,
                         "content": content,
                     }
+
                     response = (
                         "Bạn muốn dịch theo **sắc thái** nào? "
                         "(ví dụ: trang trọng, thân mật, marketing, văn phòng…)\n\n"
@@ -217,6 +349,7 @@ if user_input:
             st.session_state.messages.append({"role": "assistant", "content": response})
 
     else:
+        st.session_state.uploaded_file_content = None
         with st.chat_message("assistant"):
             with st.spinner("🤖 Thinking..."):
                 try:
